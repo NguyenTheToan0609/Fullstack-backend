@@ -34,6 +34,7 @@
           <th>First Name</th>
           <th>Last Name</th>
           <th>Address</th>
+          <th>Action</th>
         </tr>
 
         <% dataUsers.forEach(function(user, i){ %>
@@ -42,7 +43,12 @@
           <td><%= user.firstName %></td>
           <td><%= user.lastName %></td>
           <td><%= user.address %></td>
+          <td>
+            <a href="/edit-crud?id=<%= user.id %>" type="button">Edit</a>
+            <a href="/delete-crud?id=<%= user.id %>" type="button">Delete</a>
+          </td>
         </tr>
+
         <% }); %>
       </table>
     </div>
