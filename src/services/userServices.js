@@ -2,6 +2,7 @@ import { where } from "sequelize";
 var bcrypt = require("bcryptjs");
 import db from "../models/index";
 import { raw } from "body-parser";
+import user from "../models/user";
 
 let handleUserLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
@@ -57,6 +58,32 @@ let checkUSerEmail = (userEmail) => {
   });
 };
 
+let getAllUsers = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let users = "";
+      if (userId === "ALL") {
+        users = await db.User.findAll({
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+      } else if (userId || userId !== "ALL") {
+        users = await db.User.findOne({
+          where: { id: userId },
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+      }
+      resolve(users);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   handleUserLogin,
+  getAllUsers,
 };
