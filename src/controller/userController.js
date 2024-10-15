@@ -1,4 +1,12 @@
-import { handleUserLogin, getAllUsers } from "../services/userServices";
+import { json } from "body-parser";
+import {
+  handleUserLogin,
+  getAllUsers,
+  createNewUSer,
+  deleteUser,
+  editUser,
+  getAllCodeService,
+} from "../services/userServices";
 
 let handleLogin = async (req, res) => {
   let email = req.body.email;
@@ -36,7 +44,41 @@ let handleGetAllUser = async (req, res) => {
   });
 };
 
+let handleCreateNewUser = async (req, res) => {
+  let data = req.body;
+  let message = await createNewUSer(data);
+  return res.status(200).json(message);
+};
+
+let handleEditUser = async (req, res) => {
+  let data = req.body;
+  let message = await editUser(data);
+  return res.status(200).json(message);
+};
+
+let handleDeleteUser = async (req, res) => {
+  let id = req.body.id;
+  if (!id) {
+    return res.status(200).json({
+      errCode: 1,
+      errMessage: "Not found id",
+    });
+  }
+  let message = await deleteUser(id);
+  return res.status(200).json(message);
+};
+
+let getAllcode = async (req, res) => {
+  let data = await getAllCodeService(req.query.type);
+  console.log("check data ", data);
+  return res.status(200).json(data);
+};
+
 module.exports = {
   handleLogin,
   handleGetAllUser,
+  handleCreateNewUser,
+  handleEditUser,
+  handleDeleteUser,
+  getAllcode,
 };
