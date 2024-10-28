@@ -60,18 +60,36 @@ let getAllDoctorsService = () => {
 let saveDetailDoctor = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!inputData || !inputData.contentHTMl || !inputData.contentMarkdown) {
+      if (
+        !inputData ||
+        !inputData.contentHTMl ||
+        !inputData.contentMarkdown ||
+        !inputData.action
+      ) {
         resolve({
           errCode: 2,
           errMessage: "Missing required paramters",
         });
       } else {
-        await db.Markdown.create({
-          contentHTMl: inputData.contentHTMl,
-          contentMarkdown: inputData.contentMarkdown,
-          description: inputData.description,
-          doctorId: inputData.doctorId,
-        });
+        if (inputData.action === "CREATE") {
+          await db.Markdown.create({
+            contentHTMl: inputData.contentHTMl,
+            contentMarkdown: inputData.contentMarkdown,
+            description: inputData.description,
+            doctorId: inputData.doctorId,
+          });
+        } else if (inputData.action === "EDIT") {
+          let doctorMarkDown = await db.Markdown.findOne({
+            where: { doctorId: inputData.doctorId },
+            raw: false,
+          });
+          if (doctorMarkDown) {
+            doctorMarkDown.contentHTMl = inputData.contentHTMl;
+            doctorMarkDown.contentMarkdown = inputData.contentMarkdown;
+            doctorMarkDown.description = inputData.description;
+            await doctorMarkDown.save();
+          }
+        }
         resolve({
           errCode: 0,
           errMessage: "Add new doctor success!!",
@@ -96,7 +114,7 @@ let getDetailDoctorByIdService = (inputId) => {
         let data = await db.User.findOne({
           where: { id: inputId },
           attributes: {
-            exclude: ["password", "image"],
+            exclude: ["password"],
           },
           include: [
             {
@@ -109,9 +127,13 @@ let getDetailDoctorByIdService = (inputId) => {
               attributes: ["valueEn", "valueVi"],
             },
           ],
-          raw: true,
+          raw: false,
           nest: true,
         });
+        if (data && data.image) {
+          data.image = new Buffer(data.image, "base64").toString("binary");
+        }
+        if (!data) data = {};
         resolve({
           errCode: 0,
           data: data,
