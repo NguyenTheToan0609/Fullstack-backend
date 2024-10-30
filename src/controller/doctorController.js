@@ -4,6 +4,7 @@ import {
   getAllDoctorsService,
   saveDetailDoctor,
   getDetailDoctorByIdService,
+  bulkCreateScheduleService,
 } from "../services/doctorServices";
 
 let getTopDoctorHome = async (req, res) => {
@@ -60,9 +61,23 @@ let getDetailDoctorById = async (req, res) => {
   }
 };
 
+let bulkCreateSchedule = async (req, res) => {
+  try {
+    let data = await bulkCreateScheduleService(req.body);
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server ...",
+    });
+  }
+};
+
 module.exports = {
   getTopDoctorHome,
   getAllDoctors,
   postInforDoctor,
   getDetailDoctorById,
+  bulkCreateSchedule,
 };
