@@ -63,17 +63,30 @@ let getAllDoctorsService = () => {
 let saveDetailDoctor = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
+      // selectedPrice: this.state.selectedPrice.value,
+      // selectedPayment: this.state.selectedPayment.value,
+      // selectedProvince: this.state.selectedProvince.value,
+      // nameClinic: this.state.nameClinic,
+      // addressClinic: this.state.addressClinic,
+      // note: this.state.note,
       if (
         !inputData ||
         !inputData.contentHTMl ||
         !inputData.contentMarkdown ||
-        !inputData.action
+        !inputData.action ||
+        !inputData.selectedPrice ||
+        !inputData.selectedPayment ||
+        !inputData.selectedProvince ||
+        !inputData.nameClinic ||
+        !inputData.addressClinic ||
+        !inputData.note
       ) {
         resolve({
           errCode: 2,
           errMessage: "Missing required paramters",
         });
       } else {
+        //upsert to Markdown
         if (inputData.action === "CREATE") {
           await db.Markdown.create({
             contentHTMl: inputData.contentHTMl,
@@ -93,6 +106,37 @@ let saveDetailDoctor = (inputData) => {
             await doctorMarkDown.save();
           }
         }
+
+        //upsert to doctor_infor table
+        let DoctorInfor = await db.Doctor_Infor.findOne({
+          where: {
+            doctorId: inputData.doctorId,
+          },
+          raw: false,
+        });
+        if (DoctorInfor) {
+          //update
+          DoctorInfor.doctorId = inputData.doctorId;
+          DoctorInfor.priceId = inputData.selectedPrice;
+          DoctorInfor.paymentId = inputData.selectedPayment;
+          DoctorInfor.provinceId = inputData.selectedProvince;
+          DoctorInfor.nameClinic = inputData.nameClinic;
+          DoctorInfor.addressClinic = inputData.addressClinic;
+          DoctorInfor.note = inputData.note;
+          await DoctorInfor.save();
+        } else {
+          //create
+          await db.Doctor_Infor.create({
+            doctorId: inputData.doctorId,
+            priceId: inputData.selectedPrice,
+            paymentId: inputData.selectedPayment,
+            provinceId: inputData.selectedProvince,
+            nameClinic: inputData.nameClinic,
+            addressClinic: inputData.addressClinic,
+            note: inputData.note,
+          });
+        }
+
         resolve({
           errCode: 0,
           errMessage: "Add new doctor success!!",
