@@ -63,12 +63,6 @@ let getAllDoctorsService = () => {
 let saveDetailDoctor = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // selectedPrice: this.state.selectedPrice.value,
-      // selectedPayment: this.state.selectedPayment.value,
-      // selectedProvince: this.state.selectedProvince.value,
-      // nameClinic: this.state.nameClinic,
-      // addressClinic: this.state.addressClinic,
-      // note: this.state.note,
       if (
         !inputData ||
         !inputData.contentHTMl ||
@@ -172,6 +166,30 @@ let getDetailDoctorByIdService = (inputId) => {
               model: db.Allcode,
               as: "positionData",
               attributes: ["valueEn", "valueVi"],
+            },
+
+            {
+              model: db.Doctor_Infor,
+              attributes: {
+                exclude: ["id", "doctorId"],
+              },
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "priceTypeData",
+                  attributes: ["valueEn", "valueVi"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "provinceTypeData",
+                  attributes: ["valueEn", "valueVi"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "paymentTypeData",
+                  attributes: ["valueEn", "valueVi"],
+                },
+              ],
             },
           ],
           raw: false,
