@@ -1,5 +1,6 @@
 import db from "../models/index";
 require("dotenv").config();
+import emmailService from "./emailService";
 
 let postInforPatientService = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -10,6 +11,15 @@ let postInforPatientService = (data) => {
           errMessage: "Missing required paramters",
         });
       } else {
+        await emmailService.sendSimpleEmail({
+          reciverEmail: data.email,
+          patientName: "Patient",
+          time: "8:00 - 9:00",
+          doctorName: "Nguyễn Thế Toàn",
+          redirectLink:
+            "https://www.youtube.com/channel/UCyEewAFvdb7ReTLqydD31cw",
+        });
+
         let user = await db.User.findOrCreate({
           where: { email: data.email },
           defaults: {
@@ -17,7 +27,6 @@ let postInforPatientService = (data) => {
             rodeId: "R3",
           },
         });
-
         if (user && user[0]) {
           await db.Booking.findOrCreate({
             where: { paitenId: user[0].id },
@@ -30,7 +39,6 @@ let postInforPatientService = (data) => {
             },
           });
         }
-
         resolve({
           errCode: 0,
           errMessage: "Booking  success!!",
