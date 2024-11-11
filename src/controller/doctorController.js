@@ -1,4 +1,3 @@
-import doctorServices from "../services/doctorServices";
 import {
   getAllTopDoctor,
   getAllDoctorsService,
