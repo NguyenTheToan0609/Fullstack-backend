@@ -5,7 +5,13 @@ import emmailService from "./emailService";
 let postInforPatientService = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.email || !data.doctorId || !data.date || !data.timeType) {
+      if (
+        !data.email ||
+        !data.doctorId ||
+        !data.date ||
+        !data.timeType ||
+        !data.fullName
+      ) {
         resolve({
           errCode: 1,
           errMessage: "Missing required paramters",
@@ -13,9 +19,10 @@ let postInforPatientService = (data) => {
       } else {
         await emmailService.sendSimpleEmail({
           reciverEmail: data.email,
-          patientName: "Patient",
-          time: "8:00 - 9:00",
-          doctorName: "Nguyễn Thế Toàn",
+          patientName: data.fullName,
+          timeString: data.timeString,
+          doctorName: data.doctorName,
+          language: data.language,
           redirectLink:
             "https://www.youtube.com/channel/UCyEewAFvdb7ReTLqydD31cw",
         });
