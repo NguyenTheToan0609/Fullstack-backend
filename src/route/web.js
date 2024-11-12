@@ -46,6 +46,10 @@ let initWebRoutes = (app) => {
 
   //patient
   router.post("/api/save-infor-patient", patientController.postInforPatient);
+  router.post(
+    "/api/verify-infor-patient",
+    patientController.postVerifyInforPatient
+  );
 
   return app.use("/", router);
 };

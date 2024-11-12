@@ -1,6 +1,15 @@
+import { reject } from "lodash";
 import db from "../models/index";
 require("dotenv").config();
 import emmailService from "./emailService";
+import { v4 as uuidv4 } from "uuid";
+import { where } from "sequelize";
+import { raw } from "body-parser";
+
+let builUrlEmail = (doctorId, token) => {
+  let result = `${process.env.URL_REACT}/verify-booking?token=${token}&&doctorId=${doctorId}`;
+  return result;
+};
 
 let postInforPatientService = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -17,14 +26,14 @@ let postInforPatientService = (data) => {
           errMessage: "Missing required paramters",
         });
       } else {
+        let token = uuidv4();
         await emmailService.sendSimpleEmail({
           reciverEmail: data.email,
           patientName: data.fullName,
           timeString: data.timeString,
           doctorName: data.doctorName,
           language: data.language,
-          redirectLink:
-            "https://www.youtube.com/channel/UCyEewAFvdb7ReTLqydD31cw",
+          redirectLink: builUrlEmail(data.doctorId, token),
         });
 
         let user = await db.User.findOrCreate({
@@ -43,6 +52,7 @@ let postInforPatientService = (data) => {
               paitenId: user[0].id,
               date: data.date,
               timeType: data.timeType,
+              token: token,
             },
           });
         }
@@ -57,6 +67,44 @@ let postInforPatientService = (data) => {
   });
 };
 
+let postVerifyInforPatientService = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.doctorId || !data.token) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required paramters",
+        });
+      } else {
+        let appointment = await db.Booking.findOne({
+          where: {
+            doctorId: data.doctorId,
+            token: data.token,
+            statusId: "S1",
+          },
+          raw: false,
+        });
+        if (appointment) {
+          appointment.statusId = "S2";
+          await appointment.save();
+          resolve({
+            errCode: 0,
+            errMessage: "Update the appointment success",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "Appointment has been booked or does not exist",
+          });
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   postInforPatientService,
+  postVerifyInforPatientService,
 };
