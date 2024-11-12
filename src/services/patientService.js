@@ -1,7 +1,7 @@
 import { reject } from "lodash";
 import db from "../models/index";
 require("dotenv").config();
-import emmailService from "./emailService";
+import emailService from "./emailService";
 import { v4 as uuidv4 } from "uuid";
 import { where } from "sequelize";
 import { raw } from "body-parser";
@@ -23,11 +23,11 @@ let postInforPatientService = (data) => {
       ) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required paramters",
+          errMessage: "Missing required parameters",
         });
       } else {
         let token = uuidv4();
-        await emmailService.sendSimpleEmail({
+        await emailService.sendSimpleEmail({
           reciverEmail: data.email,
           patientName: data.fullName,
           timeString: data.timeString,
@@ -40,25 +40,25 @@ let postInforPatientService = (data) => {
           where: { email: data.email },
           defaults: {
             email: data.email,
-            rodeId: "R3",
+            roleId: "R3",
           },
         });
+
         if (user && user[0]) {
-          await db.Booking.findOrCreate({
+          await db.Booking.create({
             where: { paitenId: user[0].id },
-            defaults: {
-              statusId: "S1",
-              doctorId: data.doctorId,
-              paitenId: user[0].id,
-              date: data.date,
-              timeType: data.timeType,
-              token: token,
-            },
+            statusId: "S1",
+            doctorId: data.doctorId,
+            paitenId: user[0].id,
+            date: data.date,
+            timeType: data.timeType,
+            token: token,
           });
         }
+
         resolve({
           errCode: 0,
-          errMessage: "Booking  success!!",
+          errMessage: "Booking success!!",
         });
       }
     } catch (e) {
