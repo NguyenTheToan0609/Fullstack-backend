@@ -33,7 +33,6 @@ let createSpecialtyService = (data) => {
             descriptionMarkDown: data.descriptionMarkDown,
           });
         }
-
         resolve({
           errCode: 0,
           errMessage: "OK",

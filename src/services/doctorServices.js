@@ -60,24 +60,42 @@ let getAllDoctorsService = () => {
   });
 };
 
+let checkRequiredFields = (inputData) => {
+  let arrFields = [
+    "doctorId",
+    "contentHTMl",
+    "contentMarkdown",
+    "action",
+    "selectedPrice",
+    "selectedPayment",
+    "selectedProvince",
+    "nameClinic",
+    "addressClinic",
+    "note",
+    "specialtyId",
+    // "clinicId",
+  ];
+  let isValid = true;
+  let element = "";
+  for (let i = 0; i < arrFields.length; i++) {
+    if (!inputData[arrFields[i]]) {
+      (isValid = false), (element = arrFields[i]);
+      break;
+    }
+  }
+  return {
+    isValid: isValid,
+    element: element,
+  };
+};
 let saveDetailDoctor = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (
-        !inputData ||
-        !inputData.contentHTMl ||
-        !inputData.contentMarkdown ||
-        !inputData.action ||
-        !inputData.selectedPrice ||
-        !inputData.selectedPayment ||
-        !inputData.selectedProvince ||
-        !inputData.nameClinic ||
-        !inputData.addressClinic ||
-        !inputData.note
-      ) {
+      let checkOjb = checkRequiredFields(inputData);
+      if (checkOjb.isValid === false) {
         resolve({
           errCode: 2,
-          errMessage: "Missing required paramters",
+          errMessage: `Missing required paramters ${checkOjb.element}`,
         });
       } else {
         //upsert to Markdown
@@ -117,6 +135,8 @@ let saveDetailDoctor = (inputData) => {
           DoctorInfor.nameClinic = inputData.nameClinic;
           DoctorInfor.addressClinic = inputData.addressClinic;
           DoctorInfor.note = inputData.note;
+          DoctorInfor.specialtyId = inputData.specialtyId;
+          DoctorInfor.clinicId = inputData.clinicId;
           await DoctorInfor.save();
         } else {
           //create
@@ -128,9 +148,10 @@ let saveDetailDoctor = (inputData) => {
             nameClinic: inputData.nameClinic,
             addressClinic: inputData.addressClinic,
             note: inputData.note,
+            specialtyId: inputData.specialtyId,
+            clinicId: inputData.clinicId,
           });
         }
-
         resolve({
           errCode: 0,
           errMessage: "Add new doctor success!!",
