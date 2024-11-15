@@ -88,6 +88,7 @@ let checkRequiredFields = (inputData) => {
     element: element,
   };
 };
+
 let saveDetailDoctor = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
