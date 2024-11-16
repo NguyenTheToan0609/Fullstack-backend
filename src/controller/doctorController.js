@@ -7,6 +7,7 @@ import {
   getScheduleDateService,
   getDoctorExtraInforService,
   getProfileDoctorByIdService,
+  getDetailPatientForDoctorService,
 } from "../services/doctorServices";
 
 let getTopDoctorHome = async (req, res) => {
@@ -115,6 +116,22 @@ let getProfileDoctorById = async (req, res) => {
   }
 };
 
+let getDetailPatientForDoctor = async (req, res) => {
+  try {
+    let data = await getDetailPatientForDoctorService(
+      req.query.doctorId,
+      req.query.date
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server ...",
+    });
+  }
+};
+
 module.exports = {
   getTopDoctorHome,
   getAllDoctors,
@@ -124,4 +141,5 @@ module.exports = {
   getScheduleDate,
   getDoctorExtraInfor,
   getProfileDoctorById,
+  getDetailPatientForDoctor,
 };

@@ -19,7 +19,10 @@ let postInforPatientService = (data) => {
         !data.doctorId ||
         !data.date ||
         !data.timeType ||
-        !data.fullName
+        !data.fullName ||
+        !data.selectedGender ||
+        !data.address ||
+        !data.phoneNumber
       ) {
         resolve({
           errCode: 1,
@@ -41,6 +44,10 @@ let postInforPatientService = (data) => {
           defaults: {
             email: data.email,
             roleId: "R3",
+            firstName: data.fullName,
+            address: data.address,
+            gender: data.selectedGender,
+            phonenumber: data.phoneNumber,
           },
         });
 
@@ -55,7 +62,6 @@ let postInforPatientService = (data) => {
             token: token,
           });
         }
-
         resolve({
           errCode: 0,
           errMessage: "Booking success!!",
