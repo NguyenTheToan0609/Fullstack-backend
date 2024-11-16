@@ -73,7 +73,7 @@ let checkRequiredFields = (inputData) => {
     "addressClinic",
     "note",
     "specialtyId",
-    // "clinicId",
+    "clinicId",
   ];
   let isValid = true;
   let element = "";
