@@ -475,6 +475,11 @@ let getDetailPatientForDoctorService = (doctorId, date) => {
                 },
               ],
             },
+            {
+              model: db.Allcode,
+              as: "timeTypeDataPatien",
+              attributes: ["valueEn", "valueVi"],
+            },
           ],
           raw: false,
           nest: true,
