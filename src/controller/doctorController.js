@@ -8,6 +8,7 @@ import {
   getDoctorExtraInforService,
   getProfileDoctorByIdService,
   getDetailPatientForDoctorService,
+  sendRemedyService,
 } from "../services/doctorServices";
 
 let getTopDoctorHome = async (req, res) => {
@@ -132,6 +133,19 @@ let getDetailPatientForDoctor = async (req, res) => {
   }
 };
 
+let sendRemedy = async (req, res) => {
+  try {
+    let data = await sendRemedyService(req.body);
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error from server ...",
+    });
+  }
+};
+
 module.exports = {
   getTopDoctorHome,
   getAllDoctors,
@@ -142,4 +156,5 @@ module.exports = {
   getDoctorExtraInfor,
   getProfileDoctorById,
   getDetailPatientForDoctor,
+  sendRemedy,
 };

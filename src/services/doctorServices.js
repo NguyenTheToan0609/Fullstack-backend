@@ -2,6 +2,7 @@ import { where } from "sequelize";
 import db from "../models/index";
 import { raw } from "body-parser";
 require("dotenv").config();
+import emailService from "./emailService";
 import _, { reject } from "lodash";
 const MaX_NUMBER_SCHEDULE = process.env.MaX_NUMBER_SCHEDULE;
 
@@ -495,6 +496,42 @@ let getDetailPatientForDoctorService = (doctorId, date) => {
   });
 };
 
+let sendRemedyService = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.email || !data.doctorId || !data.paitenId || !data.timeType) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required paramters",
+        });
+      } else {
+        //update paitent status
+        let appointment = await db.Booking.findOne({
+          where: {
+            doctorId: data.doctorId,
+            paitenId: data.paitenId,
+            timeType: data.timeType,
+            statusId: "S2",
+          },
+          raw: false,
+        });
+        if (appointment) {
+          appointment.statusId = "S3";
+          await appointment.save();
+        }
+        //send email remedy
+        await emailService.sendRemedyEmail(data);
+        resolve({
+          errCode: 0,
+          errMessage: "Ok",
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   getAllTopDoctor,
   getAllDoctorsService,
@@ -505,4 +542,5 @@ module.exports = {
   getDoctorExtraInforService,
   getProfileDoctorByIdService,
   getDetailPatientForDoctorService,
+  sendRemedyService,
 };
