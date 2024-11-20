@@ -35,7 +35,6 @@ module.exports = (sequelize, DataTypes) => {
   Doctor_Infor.init(
     {
       doctorId: DataTypes.INTEGER,
-
       priceId: DataTypes.STRING,
       specialtyId: DataTypes.INTEGER,
       clinicId: DataTypes.INTEGER,

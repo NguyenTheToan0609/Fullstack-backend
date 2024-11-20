@@ -1,4 +1,4 @@
-const { Sequelize, Model } = require("sequelize");
+const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
 // Option 2: Passing parameters separately (other dialects)
@@ -11,6 +11,15 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
     logging: false,
+    dialectOptions:
+      process.env.DB_SSL === "true"
+        ? {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          }
+        : {},
     query: {
       raw: true,
     },
@@ -26,5 +35,4 @@ let connectDB = async () => {
     console.error("Unable to connect to the database:", error);
   }
 };
-
 module.exports = connectDB;
